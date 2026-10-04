@@ -3,7 +3,7 @@ import re
 import pytest
 from pydantic import ValidationError
 
-from app.sample import ITEMS
+from app.data.sample import ITEMS
 from app.schemas.skilifts import (
     DATE_PATTERN,
     LiftDayPatch,

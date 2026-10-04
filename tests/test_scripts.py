@@ -7,7 +7,7 @@ from moto import mock_aws
 from app.config import Settings
 from app.db import dynamodb_resource
 from app.repositories.skilifts import SkiLiftRepository
-from app.sample import ITEMS
+from app.data.sample import ITEMS
 from scripts.create_table import main as create_main
 from scripts.seed import main as seed_main
 

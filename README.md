@@ -210,7 +210,7 @@ Two sentinel values live in the service module and drive the whole model:
 - `STATIC_METADATA = "Static Data"` — the sort key of a profile
 - `RESORT_LIFT = "Resort Data"` — the partition key of the resort days
 
-`make db-seed` writes the 19 sample items from `app/sample.py` with `PutItem`:
+`make db-seed` writes the 19 sample items from `app/data/sample.py` with `PutItem`:
 4 profiles (Lift 3, Lift 23, Lift 16, Lift 10), 12 lift days (those four lifts
 across `01/01/20`, `02/01/20`, and `03/01/20`), and 3 resort days (the same
 three dates). Seeding again replaces those keys and leaves other items alone.
@@ -253,7 +253,8 @@ app/main.py                       create_app() factory and the uvicorn entry poi
 app/config.py                     environment settings
 app/db.py                         boto3 resource, table creation, index definition
 app/errors.py                     domain, validation, and unexpected-error handlers
-app/sample.py                     the 19 demo items
+app/data/__init__.py              data package marker
+app/data/sample.py                the 19 demo items
 app/schemas/__init__.py           schema package marker
 app/schemas/skilifts.py           Pydantic models, one per item kind, plus the page
 app/services/__init__.py          service package marker

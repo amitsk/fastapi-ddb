@@ -8,7 +8,7 @@ from app.config import Settings
 from app.db import create_skilifts_table, dynamodb_resource
 from app.main import create_app
 from app.repositories.skilifts import SkiLiftRepository
-from app.sample import ITEMS
+from app.data.sample import ITEMS
 
 # Every environment variable app.config.Settings reads, with no env prefix.
 SETTINGS_ENV_NAMES = (

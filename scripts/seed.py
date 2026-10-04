@@ -13,7 +13,7 @@ from typing import Any
 from app.config import Settings
 from app.db import dynamodb_resource
 from app.repositories.skilifts import SkiLiftRepository
-from app.sample import ITEMS
+from app.data.sample import ITEMS
 
 
 def main() -> None:

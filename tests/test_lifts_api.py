@@ -1,6 +1,6 @@
 """Tests for the lift routes: spec bodies, statuses, ordering, and errors.
 
-Every test runs against a fresh moto table seeded with ``app.sample.ITEMS`` and
+Every test runs against a fresh moto table seeded with ``app.data.sample.ITEMS`` and
 built by the ``client`` fixture, so the assertions read as the spec does.
 """
 
