@@ -1,9 +1,6 @@
-# fastapi-ddb — Python / FastAPI port (spec stage)
+# fastapi-ddb
 
-Behavior-compatible port of the TypeScript `fastify-ddb` SkiLifts API:
-same routes, validation, error envelope, and DynamoDB access patterns,
-runnable against local DynamoDB.
+Demo CRUD API for the SkiLifts DynamoDB table.
 
-- **Spec:** `docs/superpowers/specs/2026-10-04-fastapi-port-spec.md` (source of truth for this repo)
-- **Contract anchor:** sibling repo `fastify-ddb` (TypeScript/Fastify)
+- **Spec:** `docs/superpowers/specs/2026-10-03-skilifts-demo-api-design.md` (source of truth)
 - **Status:** spec only — no implementation yet
