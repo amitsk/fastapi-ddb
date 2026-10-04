@@ -26,6 +26,7 @@ from app.db import dynamodb_resource
 from app.errors import register_exception_handlers
 from app.repositories.skilifts import SkiLiftRepository
 from app.routes.lifts import router as lifts_router
+from app.routes.resort import router as resort_router
 from app.services.skilifts import SkiLiftService
 
 
@@ -52,6 +53,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.settings = Settings() if settings is None else settings
     register_exception_handlers(app)
     app.include_router(lifts_router)
+    app.include_router(resort_router)
     return app
 
 
