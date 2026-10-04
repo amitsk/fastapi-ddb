@@ -1,0 +1,24 @@
+name: Run Tests and Lint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.14"
+          enable-cache: true
+      - name: Install dependencies
+        run: make install
+      - name: Run checks
+        run: make check
+      # To publish on release, add a separate job using PyPI trusted publishing:
+      #   - run: uv build
+      #   - run: uv publish   (requires `permissions: id-token: write`)
