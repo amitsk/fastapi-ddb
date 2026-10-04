@@ -33,7 +33,7 @@ The fixture vectors in §8 must produce the same outcomes as the TS suite.
 | `services/skilift.service.ts` | `app/services/skilift_service.py` — domain rules only |
 | `routes/skilift.routes.ts` + health/ready/root in `server.ts` | `app/routes/skilift.py` (APIRouter) + `app/routes/health.py` |
 | `utils/error-handler.ts`  | `app/errors.py` — hierarchy, handlers, `map_aws_error`, §9 |
-| `utils/pagination.py` equiv | `app/pagination.py` — canonical tokens, §10 |
+| `utils/pagination.ts`        | `app/pagination.py` — canonical tokens, §10 |
 | `plugins/dynamodb.plugin.ts` | lifespan in `app/main.py` (build client + service, attach to `app.state`) |
 | `server.ts`               | `app/main.py` — `create_app()` factory + middleware, §11 |
 | `index.ts`                | `app/__main__.py` — dotenv load, uvicorn run, SIGINT/SIGTERM handling |
