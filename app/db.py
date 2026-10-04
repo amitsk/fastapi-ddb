@@ -9,10 +9,9 @@ from app.config import Settings
 # Credentials DynamoDB Local accepts when the settings do not supply both keys.
 LOCAL_CREDENTIAL = "local"
 
-# The name of the riders index. It is fixed here because this module creates the
-# index, and mirrored by ``app.services.skilifts.GSI_NAME``, which the repository
-# and the service read it from. It is deliberately not imported from there: the
-# service imports the repository, so the dependency only runs downwards.
+# The name of the riders index. It lives here because this module creates the
+# index; ``app.services.skilifts`` re-exports it, so both import paths name the
+# same string.
 GSI_NAME = "SkiLiftsByRiders"
 
 # DynamoDB only accepts attribute definitions for attributes used as keys, so
