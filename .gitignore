@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.egg-info/
+dist/
+build/
+# CDK / AWS
+cdk.out/
+.cdk.staging/
+# Env / local
+.env
+*.db
+# Editors
+.vscode/
+.idea/
+.DS_Store
