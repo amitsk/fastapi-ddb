@@ -1,4 +1,4 @@
-# fastify-ddb — Python / FastAPI port (spec stage)
+# fastapi-ddb — Python / FastAPI port (spec stage)
 
 Behavior-compatible port of the TypeScript `fastify-ddb` SkiLifts API:
 same routes, validation, error envelope, and DynamoDB access patterns,
