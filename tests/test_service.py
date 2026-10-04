@@ -35,9 +35,16 @@ class FakeRepo:
         self.updated = True
         return self.item
 
-    def put_item(self, item: dict) -> None:
+    def put_item(self, item: dict) -> dict:
         self.calls.append(("put_item", dict(item)))
-        self.item = item
+        # The real repository returns the item as the table now stores it, which
+        # for a number set is deduplicated and unordered. Handing back the request
+        # dict unchanged would let a service that still echoed its own body pass.
+        stored = dict(item)
+        if isinstance(stored.get("OpenLifts"), list):
+            stored["OpenLifts"] = set(stored["OpenLifts"])
+        self.item = stored
+        return stored
 
     def delete_item(self, lift: str, metadata: str) -> bool:
         self.calls.append(("delete_item", lift, metadata))

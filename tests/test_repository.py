@@ -125,6 +125,49 @@ def test_open_lifts_is_written_as_a_number_set():
 
 
 @mock_aws
+def test_a_put_returns_the_stored_item_not_the_one_passed_in():
+    """A replacement write answers from the write itself, not from a re-read.
+
+    ``PutItem`` cannot return the new item, so the repository hands back the
+    attributes it just wrote: a number set deduplicated, and a replacing write
+    reporting the new facets. Answering from a following ``GetItem`` instead
+    would be an extra call that an eventually consistent read could satisfy from
+    before the write.
+    """
+    repo = _repository()
+    repo.put_item(
+        {
+            "Lift": "Resort Data",
+            "Metadata": "01/01/20",
+            "TotalUniqueLiftRiders": 5500,
+            "AverageSnowCoverageInches": 35,
+            "AvalancheDanger": "Considerable",
+            "OpenLifts": [3, 23, 16],
+        }
+    )
+    replaced = repo.put_item(
+        {
+            "Lift": "Resort Data",
+            "Metadata": "01/01/20",
+            "TotalUniqueLiftRiders": 6000,
+            "AverageSnowCoverageInches": 40,
+            "AvalancheDanger": "Low",
+            "OpenLifts": [10, 3, 3],
+        }
+    )
+    # The facets are the ones just written, not the ones the first put stored.
+    assert replaced["TotalUniqueLiftRiders"] == 6000
+    assert replaced["AverageSnowCoverageInches"] == 40
+    assert replaced["AvalancheDanger"] == "Low"
+    assert replaced["OpenLifts"] == {3, 10}
+    # And they are what the table holds, as a number set of Decimals.
+    stored = repo.get_item("Resort Data", "01/01/20")
+    assert stored["TotalUniqueLiftRiders"] == Decimal("6000")
+    assert stored["AvalancheDanger"] == "Low"
+    assert stored["OpenLifts"] == {Decimal("3"), Decimal("10")}
+
+
+@mock_aws
 def test_an_update_replaces_open_lifts_with_a_number_set():
     repo = _repository()
     repo.put_item(

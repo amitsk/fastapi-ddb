@@ -57,13 +57,24 @@ class SkiLiftRepository:
         # has no importable type; every call below is a plain table action.
         self._table: Any = table
 
-    def put_item(self, item: dict) -> None:
+    def put_item(self, item: dict) -> dict:
         """Write the item at its key, replacing whatever was stored there.
 
         ``PutItem`` replaces the whole item, so attributes of another kind that
         the caller omitted are removed.
+
+        The stored attributes are returned, which is not always the dict that was
+        handed in: ``OpenLifts`` is a number set, so it comes back deduplicated.
+        Returning them is what lets a ``PUT`` answer with the item as stored
+        without a second call. ``PutItem`` cannot be asked for the new item --
+        its ``ReturnValues`` takes only ``NONE`` or ``ALL_OLD`` -- so the answer is
+        the attributes about to be written rather than a re-read. A re-read would
+        have been both an extra call and eventually consistent, so a replacing
+        write could answer with the item as it was before it.
         """
-        self._table.put_item(Item=_stored(item))
+        stored = _stored(item)
+        self._table.put_item(Item=stored)
+        return stored
 
     def get_item(self, lift: str, metadata: str) -> dict | None:
         """Read one item, or ``None`` when the key holds none."""

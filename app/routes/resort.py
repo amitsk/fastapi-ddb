@@ -46,17 +46,8 @@ def _service(request: Request) -> SkiLiftService:
 
 @router.put("/days/{date}", response_model=ResortDayRead)
 def put_resort_day(request: Request, date: Date, body: ResortDayWrite) -> ResortDayRead:
-    """Write one resort-wide day, replacing whatever was stored there.
-
-    ``OpenLifts`` is a DynamoDB number set, so the table collapses duplicates and
-    stores the numbers in ascending order, while the service echoes back the body
-    it was handed. Reading the item back is what makes this answer agree with a
-    ``GET`` of the day just written, so a caller never has to guess which of the
-    two shapes a write returned.
-    """
-    service = _service(request)
-    service.put_resort_day(date, body)
-    return service.get_resort_day(date)
+    """Write one resort-wide day, replacing whatever was stored there."""
+    return _service(request).put_resort_day(date, body)
 
 
 @router.get("/days/{date}", response_model=ResortDayRead)

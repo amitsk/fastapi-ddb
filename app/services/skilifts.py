@@ -206,8 +206,7 @@ class SkiLiftService:
             "Metadata": STATIC_METADATA,
             **body.model_dump(mode="json"),
         }
-        self._repo.put_item(item)
-        return _parse(item, ProfileRead)
+        return _parse(self._repo.put_item(item), ProfileRead)
 
     def get_profile(self, lift: str) -> ProfileRead:
         """Read the profile of a lift."""
@@ -225,8 +224,7 @@ class SkiLiftService:
             "Metadata": path_date_to_metadata(date),
             **body.model_dump(mode="json"),
         }
-        self._repo.put_item(item)
-        return _parse(item, LiftDayRead)
+        return _parse(self._repo.put_item(item), LiftDayRead)
 
     def get_lift_day(self, lift: str, date: str) -> LiftDayRead:
         """Read one day of a lift."""
@@ -298,8 +296,7 @@ class SkiLiftService:
             "Metadata": path_date_to_metadata(date),
             **body.model_dump(mode="json"),
         }
-        self._repo.put_item(item)
-        return _parse(item, ResortDayRead)
+        return _parse(self._repo.put_item(item), ResortDayRead)
 
     def get_resort_day(self, date: str) -> ResortDayRead:
         """Read one resort-wide day."""
