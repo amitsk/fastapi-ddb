@@ -21,7 +21,7 @@ Success means the tests in §12 pass and the local run in §11 returns those sam
 
 - Python **3.14**
 - FastAPI, Pydantic v2, pydantic-settings, boto3, uvicorn
-- Tests: pytest, moto, and FastAPI `TestClient` (httpx)
+- Tests: pytest, moto, and FastAPI `TestClient`. `TestClient` depends on the `httpx2` package.
 
 The app listens on port **3000**. DynamoDB Local listens on port **8000**.
 
@@ -295,7 +295,7 @@ The API process runs on the host. The README states these steps and describes th
 
 ## 12. Tests
 
-Tests use `TestClient` and moto. `create_app()` runs inside the moto context, so the suite does not need Docker. The fixture loads `app/sample.py` through the API or the repository.
+Tests use `TestClient` and moto. The test environment installs `httpx2`, which is the HTTP library `TestClient` imports. `create_app()` runs inside the moto context, so the suite does not need Docker. The fixture loads `app/sample.py` through the API or the repository.
 
 Required cases:
 
