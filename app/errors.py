@@ -20,6 +20,7 @@ client.
 
 import logging
 from collections.abc import Awaitable, Callable
+from typing import cast
 
 from fastapi import FastAPI, Request
 from fastapi.encoders import jsonable_encoder
@@ -68,26 +69,12 @@ async def _unhandled(_request: Request, exc: Exception) -> JSONResponse:
     return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
 
-def _register[ExcT: Exception](
-    app: FastAPI,
-    exc_type: type[ExcT],
-    handler: Callable[[Request, ExcT], Awaitable[Response]],
-) -> None:
-    """Register ``handler`` as the handler for ``exc_type``, keeping its types.
-
-    Starlette types an exception handler as taking any ``Exception``, but it
-    looks one up by walking the bases of what was actually raised, so a handler
-    that names the exception it answers is only ever called with that exception.
-    The wrapper states that once in types rather than casting at every
-    registration, and re-raises anything else rather than answering wrongly.
-    """
-
-    async def dispatch(request: Request, exc: Exception) -> Response:
-        if isinstance(exc, exc_type):
-            return await handler(request, exc)
-        raise exc
-
-    app.add_exception_handler(exc_type, dispatch)
+# Starlette declares an exception handler as taking any ``Exception``, which is
+# wider than what it can pass: it resolves a handler by walking the bases of the
+# raised exception, so a handler registered for one class only ever sees that
+# class. The alias is what the registrations are cast to at the point where that
+# mismatch is stated once, rather than by widening every handler's parameter.
+ExceptionHandler = Callable[[Request, Exception], Awaitable[Response]]
 
 
 def register_exception_handlers(app: FastAPI) -> None:
@@ -97,7 +84,9 @@ def register_exception_handlers(app: FastAPI) -> None:
     handlers registered for ``NotFound`` and ``BadRequest`` win over the
     catch-all whatever order they are added in.
     """
-    _register(app, NotFound, _not_found)
-    _register(app, BadRequest, _bad_request)
-    _register(app, RequestValidationError, _validation_error)
-    _register(app, Exception, _unhandled)
+    app.add_exception_handler(NotFound, cast(ExceptionHandler, _not_found))
+    app.add_exception_handler(BadRequest, cast(ExceptionHandler, _bad_request))
+    app.add_exception_handler(
+        RequestValidationError, cast(ExceptionHandler, _validation_error)
+    )
+    app.add_exception_handler(Exception, cast(ExceptionHandler, _unhandled))

@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from pydantic import BaseModel
 
 from app.errors import register_exception_handlers
-from app.services.skilifts import BadRequest, InvalidToken, NotFound
+from app.services.skilifts import BadRequest, InvalidToken, NotFound, UnreadableItem
 
 
 def test_domain_errors_use_the_spec_bodies():
@@ -75,13 +75,42 @@ def test_unexpected_error_hides_the_message(caplog):
     assert "table is gone" in caplog.text
 
 
+def test_unreadable_item_is_an_internal_error(caplog):
+    """A stored item that cannot be parsed is a 500, not a 404.
+
+    ``UnreadableItem`` reaches the 500 only because it inherits ``Exception`` and
+    no handler is registered for it, so this pins that base class as well: were
+    it made a ``NotFound``, or given a handler of its own, a parse failure would
+    start answering 404 with an internal message in the body and no other test in
+    this file would notice.
+    """
+    app = FastAPI()
+    register_exception_handlers(app)
+
+    @app.get("/lifts/{lift}")
+    def lift_day(lift: str):
+        raise UnreadableItem(f"{lift} cannot be read")
+
+    with (
+        TestClient(app, raise_server_exceptions=False) as client,
+        caplog.at_level(logging.ERROR),
+    ):
+        response = client.get("/lifts/Base")
+    assert response.status_code == 500
+    assert response.json() == {"detail": "Internal server error"}
+    assert "Base cannot be read" not in response.text
+    assert "Base cannot be read" in caplog.text
+
+
 def test_routing_errors_keep_their_own_status():
     """The catch-all handler must not answer for the router's own errors.
 
     Starlette raises an ``HTTPException`` for an unknown path and for a wrong
     method, and FastAPI already renders both. A catch-all ``Exception`` handler
     that saw them would turn a 404 and a 405 into 500s and hide real mistakes, so
-    a route and an unrouted path are asked for the wrong way round.
+    a route and an unrouted path are asked for the wrong way round. The bodies
+    are asserted as well as the statuses, because only Starlette's own wording
+    proves the catch-all left them alone.
     """
     app = FastAPI()
     register_exception_handlers(app)
@@ -91,5 +120,9 @@ def test_routing_errors_keep_their_own_status():
         return {}
 
     with TestClient(app) as client:
-        assert client.post("/lifts").status_code == 405
-        assert client.get("/nowhere").status_code == 404
+        wrong_method = client.post("/lifts")
+        unknown_path = client.get("/nowhere")
+    assert wrong_method.status_code == 405
+    assert wrong_method.json() == {"detail": "Method Not Allowed"}
+    assert unknown_path.status_code == 404
+    assert unknown_path.json() == {"detail": "Not Found"}
